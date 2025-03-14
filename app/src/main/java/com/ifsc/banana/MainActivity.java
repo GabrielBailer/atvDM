@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         edmin = findViewById(R.id.edmin);
         edmax = findViewById(R.id.edmax);
-        textView.findViewById(R.id.res);
+        textView=findViewById(R.id.res);
         Button b = findViewById(R.id.button);
 
         b.setOnClickListener(v -> {

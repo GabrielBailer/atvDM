@@ -1,5 +1,7 @@
 package com.ifsc.banana;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +14,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends Activity {
+    Button button;
+    EditText editTextMsg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        button=findViewById(R.id.button);
+        button.setOnClickListener(v -> {
+            Intent i = new Intent(getApplicationContext(), MsgActivity.class);
+            editTextMsg = findViewById(R.id.edmin);
+            String mensagem = String.valueOf(editTextMsg.getText());
+            i.putExtra("msg", mensagem);
+            startActivity(i);
+        });
 
         Log.d("ciclodevida","onCreate");
         Toast.makeText(this, "onCreate", Toast.LENGTH_LONG).show();

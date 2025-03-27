@@ -12,7 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class MsgActivity extends AppCompatActivity {
+public class ResultiIMC extends AppCompatActivity {
 
     TextView textView;
     @Override

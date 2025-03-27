@@ -22,9 +22,8 @@ public class MainActivity extends Activity {
             Intent i = new Intent(getApplicationContext(), ResultiIMC.class);
             altura = findViewById(R.id.altura);
             peso = findViewById(R.id.peso);
-            float imc = Float.parseFloat(String.valueOf(altura)) * Float.parseFloat(String.valueOf(peso));
-            String mensagem = String.valueOf(imc);
-            i.putExtra("msg", mensagem);
+            float imc = Float.parseFloat(peso.getText().toString()) / (Float.parseFloat(altura.getText().toString()) * (Float.parseFloat(altura.getText().toString())));
+            i.putExtra("msg", imc);
             startActivity(i);
         });
 

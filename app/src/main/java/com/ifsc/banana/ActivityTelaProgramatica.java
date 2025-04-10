@@ -17,15 +17,15 @@ public class ActivityTelaProgramatica extends AppCompatActivity {
 
 
         LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL); // orientação vertical
-        layout.setGravity(Gravity.CENTER); // centraliza os filhos
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setGravity(Gravity.CENTER);
 
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         );
-        layout.setLayoutParams(layoutParams); // aplica no layout pai
+        layout.setLayoutParams(layoutParams);
 
         TextView textView = new TextView(this);
         textView.setText("Olá Mundo");

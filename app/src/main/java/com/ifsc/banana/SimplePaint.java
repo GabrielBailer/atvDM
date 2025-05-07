@@ -26,6 +26,7 @@ public class SimplePaint extends View {
     List<Paint> mPaintList;
     List<Path> mPathList;
     ColorDrawable colorDrawable;
+    private String shapeType = "free"; //setando previamente o tipo como livre (free) retangulo e circular
 
     public SimplePaint(Context context) {
         super(context);
@@ -77,28 +78,66 @@ public class SimplePaint extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()){
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                x0=event.getX();
-                y0=event.getY();
-                currentPath.moveTo(x0,y0);
-                this.invalidate();
+                x0 = x;
+                y0 = y;
+
+                if (shapeType.equals("free")) {
+                    currentPath.moveTo(x0, y0);
+                }
+                invalidate();
                 return true;
+
             case MotionEvent.ACTION_MOVE:
-                currentPath.lineTo(event.getX(), event.getY());
-                this.invalidate();
+                if (shapeType.equals("free")) {
+                    currentPath.lineTo(x, y);
+                }
+                invalidate();
                 return true;
+
             case MotionEvent.ACTION_UP:
-                currentPath.lineTo(event.getX(), event.getY());
-                mPaintList.add(currentPaint);
-                mPathList.add(currentPath);
+                Paint newPaint = new Paint(currentPaint);
+                Path path = new Path();
+
+                if (shapeType.equals("free")) {
+                    path.set(currentPath);
+                    mPathList.add(path);
+                    mPaintList.add(newPaint);
+                } else if (shapeType.equals("rect")) {
+                    path.addRect(x0, y0, x, y, Path.Direction.CW);
+                    mPathList.add(path);
+                    mPaintList.add(newPaint);
+                } else if (shapeType.equals("circle")) {
+                    float radius = (float) Math.hypot(x - x0, y - y0);
+                    path.addCircle(x0, y0, radius, Path.Direction.CW);
+                    mPathList.add(path);
+                    mPaintList.add(newPaint);
+                }
+
                 initLayer();
+                invalidate();
                 return true;
         }
         return true;
     }
 
+    public void undo() {
+            mPathList.remove(mPathList.size() - 1);
+            mPaintList.remove(mPaintList.size() - 1);
+            invalidate();
+    }
+
+    public void setShapeType(String shapeType) {
+        this.shapeType = shapeType;
+    }
+
     public void clearDraw(){
+        mPathList.clear();
+        mPaintList.clear();
         currentPath.reset();
         invalidate();
     }

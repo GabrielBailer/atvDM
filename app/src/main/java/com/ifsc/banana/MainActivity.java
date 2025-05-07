@@ -3,10 +3,7 @@ package com.ifsc.banana;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,10 +11,8 @@ import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
-import java.util.Random;
-
 public class MainActivity extends AppCompatActivity {
-    Button buttonClear, tradeColor;
+    Button buttonClear, tradeColor, undoButton, retangleBut, circleBut, freeBut;
     SimplePaint simplePaint;
 
 
@@ -26,10 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonClear = findViewById(R.id.button3);
-        tradeColor = findViewById(R.id.button4);
+        buttonClear = findViewById(R.id.clearButton);
+        tradeColor = findViewById(R.id.changeColor);
         simplePaint = findViewById(R.id.simplePaint);
-
+        undoButton = findViewById(R.id.undo);
+        retangleBut = findViewById(R.id.retangle);
+        circleBut = findViewById(R.id.circle);
+        freeBut = findViewById(R.id.freeDraw);
 
         buttonClear.setOnClickListener(v->{
             simplePaint.clearDraw();
@@ -60,6 +58,22 @@ public class MainActivity extends AppCompatActivity {
                     .attachBrightnessSlideBar(true)  // the default value is true.
                     .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
                     .show();
+        });
+
+        freeBut.setOnClickListener(v -> {
+            simplePaint.setShapeType("free");
+        });
+
+        retangleBut.setOnClickListener(v -> {
+            simplePaint.setShapeType("rect");
+        });
+
+        circleBut.setOnClickListener(v -> {
+            simplePaint.setShapeType("circle");
+        });
+
+        undoButton.setOnClickListener(v -> {
+            simplePaint.undo();
         });
     }
 

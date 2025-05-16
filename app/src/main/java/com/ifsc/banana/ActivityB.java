@@ -1,16 +1,15 @@
 package com.ifsc.banana;
 
+
+//Inicio da aula
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class B extends AppCompatActivity {
+public class ActivityB extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +20,7 @@ public class B extends AppCompatActivity {
         Bundle b =i.getExtras();
 
         TextView tv = findViewById(R.id.tvnomefruta);
-        tv.setText(b.getString("fruta"));
+        tv.setText(b.getString("Fruta"));
 
     }
 }

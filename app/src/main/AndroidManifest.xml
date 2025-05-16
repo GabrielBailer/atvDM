@@ -12,6 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BANANA"
         tools:targetApi="31">
+        <activity android:name="Planetas"
+            android:exported="false"/>
+        <activity
+            android:name=".ActivityB"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

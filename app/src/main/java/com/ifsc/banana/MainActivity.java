@@ -1,66 +1,65 @@
 package com.ifsc.banana;
 
-
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.EditText;
-import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.skydoves.colorpickerview.ColorEnvelope;
-import com.skydoves.colorpickerview.ColorPickerDialog;
-import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
-
-import java.util.Random;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    Button buttonClear, tradeColor;
-    SimplePaint simplePaint;
 
+    private RecyclerView recyclerView;
+    private EditText searchBar;
+    private List<AppInfo> appList = new ArrayList<>();
+    private AppAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonClear = findViewById(R.id.button3);
-        tradeColor = findViewById(R.id.button4);
-        simplePaint = findViewById(R.id.simplePaint);
 
+        searchBar = findViewById(R.id.search_bar);
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
 
-        buttonClear.setOnClickListener(v->{
-            simplePaint.clearDraw();
-        });
+        loadApps();
 
-        tradeColor.setOnClickListener(v -> {
-            new ColorPickerDialog.Builder(this)
-                    //configurando a caixa de dialogo
-                    .setTitle("ColorPicker Dialog")
-                    .setPreferenceName("MyColorPickerDialog")
-                    .setPositiveButton("Confirma",
-                            new ColorEnvelopeListener() {
-                                @Override
-                                public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                                    v.setBackgroundColor(envelope.getColor());
-                                    simplePaint.changeColor(envelope.getColor());
+        adapter = new AppAdapter(this, appList);
+        recyclerView.setAdapter(adapter);
 
-                                }
-                            })
-                    .setNegativeButton("Cancelar",
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            })
-                    .attachAlphaSlideBar(true) // the default value is true.
-                    .attachBrightnessSlideBar(true)  // the default value is true.
-                    .setBottomSpace(12) // set a bottom space between the last slidebar and buttons.
-                    .show();
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
     }
 
+    private void loadApps() {
+        PackageManager pm = getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_MAIN, null);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        List<ResolveInfo> apps = pm.queryIntentActivities(intent, 0);
+
+        for (ResolveInfo info : apps) {
+            String label = info.loadLabel(pm).toString();
+            Drawable icon = info.loadIcon(pm);
+            Intent launchIntent = pm.getLaunchIntentForPackage(info.activityInfo.packageName);
+            appList.add(new AppInfo(label, icon, launchIntent));
+        }
+
+        Collections.sort(appList, Comparator.comparing(AppInfo::getLabel));
+    }
 }

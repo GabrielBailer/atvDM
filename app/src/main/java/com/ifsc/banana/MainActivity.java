@@ -1,6 +1,7 @@
 package com.ifsc.banana;
 
 import android.content.Intent;
+
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -8,6 +9,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.content.pm.ApplicationInfo;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,50 +21,42 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private EditText searchBar;
-    private List<AppInfo> appList = new ArrayList<>();
-    private AppAdapter adapter;
-
+    PackageManager pm;
+    ListView listView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        listView=findViewById(R.id.listView);
+        pm = getPackageManager();
+        List<ApplicationInfo> applicationInfoList = new ArrayList<>();
 
-        searchBar = findViewById(R.id.search_bar);
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_LAUNCHER);
 
-        loadApps();
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(i, 0);
+        applicationInfoList.clear();
+        resolveInfos.forEach(resolveInfo -> {
+            applicationInfoList.add(resolveInfo.activityInfo.applicationInfo);
+        });
+        AppAdapter adapter = new AppAdapter(this, R.layout.item_app, applicationInfoList);
+        listView.setAdapter(adapter);
 
-        adapter = new AppAdapter(this, appList);
-        recyclerView.setAdapter(adapter);
-
-        searchBar.addTextChangedListener(new TextWatcher() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ApplicationInfo app = (ApplicationInfo) adapterView.getItemAtPosition(i);
+                Intent in = pm.getLaunchIntentForPackage(app.packageName);
+                startActivity(in);
             }
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void afterTextChanged(Editable s) {}
+
         });
     }
 
-    private void loadApps() {
-        PackageManager pm = getPackageManager();
-        Intent intent = new Intent(Intent.ACTION_MAIN, null);
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        List<ResolveInfo> apps = pm.queryIntentActivities(intent, 0);
-
-        for (ResolveInfo info : apps) {
-            String label = info.loadLabel(pm).toString();
-            Drawable icon = info.loadIcon(pm);
-            Intent launchIntent = pm.getLaunchIntentForPackage(info.activityInfo.packageName);
-            appList.add(new AppInfo(label, icon, launchIntent));
-        }
-
-        Collections.sort(appList, Comparator.comparing(AppInfo::getLabel));
-    }
 }

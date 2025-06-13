@@ -1,68 +1,49 @@
 package com.ifsc.banana;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
-public class AppAdapter extends RecyclerView.Adapter<AppAdapter.ViewHolder> {
+public class AppAdapter extends ArrayAdapter<ApplicationInfo> {
 
-    private final Context context;
-    private final List<AppInfo> originalList;
-    private final List<AppInfo> displayList;
-
-    public AppAdapter(Context context, List<AppInfo> apps) {
-        this.context = context;
-        this.originalList = new ArrayList<>(apps);
-        this.displayList = new ArrayList<>(apps);
+    int mResource;
+    public AppAdapter(@NonNull Context context, int resource, @NonNull List<ApplicationInfo> objects) {
+        super(context, resource, objects);
+        mResource = resource;
     }
 
-    public void filter(String text) {
-        displayList.clear();
-        if (text.isEmpty()) {
-            displayList.addAll(originalList);
-        } else {
-            for (AppInfo app : originalList) {
-                if (app.getLabel().toLowerCase().contains(text.toLowerCase())) {
-                    displayList.add(app);
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
-
+    @NonNull
     @Override
-    public AppAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.app_item, parent, false);
-        return new ViewHolder(view);
+    public View getView(int position, @NonNull View convertView, @NonNull ViewGroup parent){
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        convertView = inflater.inflate(mResource,parent,false);
+
+        ImageView imageView = convertView.findViewById(R.id.imageView);
+        TextView tvnome = convertView.findViewById(R.id.textView);
+        LinearLayout linearLayout = convertView.findViewById(R.id.linearLayout);
+
+        ApplicationInfo applicationInfo =  getItem(position);
+
+        tvnome.setText(applicationInfo.loadLabel(getContext().getPackageManager()));
+        imageView.setImageDrawable(applicationInfo.loadIcon(getContext().getPackageManager()));
+
+        TextView textView = new TextView(getContext());
+        textView.setText(applicationInfo.packageName);
+        linearLayout.addView(textView);
+
+
+       return convertView;
     }
 
-    @Override
-    public void onBindViewHolder(AppAdapter.ViewHolder holder, int position) {
-        AppInfo app = displayList.get(position);
-        holder.icon.setImageDrawable(app.getIcon());
-        holder.label.setText(app.getLabel());
-        holder.itemView.setOnClickListener(v -> context.startActivity(app.getLaunchIntent()));
-    }
 
-    @Override
-    public int getItemCount() {
-        return displayList.size();
-    }
-
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView icon;
-        TextView label;
-        ViewHolder(View view) {
-            super(view);
-            icon = view.findViewById(R.id.app_icon);
-            label = view.findViewById(R.id.app_label);
-        }
-    }
 }

@@ -1,43 +1,54 @@
 package com.ifsc.banana;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends AppCompatActivity {
 
-import java.util.Random;
+    Button buttonFragmentA, buttonFragmentB;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    EditText edmin, edmax;
-    TextView textView;
-    int contador = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        edmin = findViewById(R.id.edmin);
-        edmax = findViewById(R.id.edmax);
-        textView=findViewById(R.id.res);
-        Button b = findViewById(R.id.button);
 
-        b.setOnClickListener(v -> {
-            int min = Integer.parseInt(edmin.getText().toString());
-            int max = Integer.parseInt(edmax.getText().toString());
-            Random random = new Random();
+        // Vincula os botões
+        buttonFragmentA = findViewById(R.id.buttonFragmentA);
+        buttonFragmentB = findViewById(R.id.buttonFragmentB);
 
-            int R=random.nextInt(max-min)+max;
+        // Listener para os botões
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = null;
 
-            textView.setText(Integer.toString(R));
+                int id = v.getId();
+                if (id == R.id.buttonFragmentA) {
+                    fragment = new FragmentA();
+                } else if (id == R.id.buttonFragmentB) {
+                    fragment = new FragmentB();
+                }
 
-        });
+                if (fragment != null) {
+                    abreFragmento(fragment);
+                }
+            }
+        };
 
+        // Atribui o listener aos botões
+        buttonFragmentA.setOnClickListener(onClickListener);
+        buttonFragmentB.setOnClickListener(onClickListener);
     }
 
-    @Override
-    public void onClick(View v) {
-
+    // Método para trocar o fragmento exibido
+    public void abreFragmento(Fragment fragment){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frameLayout, fragment);
+        transaction.commit();
     }
 }
